@@ -25,14 +25,22 @@ struct Mechanic{
     bool on_break = false;
 };
 
+struct Cmp{
+    bool operator()(Task* a, Task* b) {
+        return a->priority < b->priority;
+    }
+};
+
 // making class scheduler 
-class Scheduler{
+class Scheduler {
 private:
     map<pair<int,int>, Task> tasks;
     int globalTaskId = 100;
 
-    struct Compare{
-        bool operator()(Task* a, Task* b)   return a->priority < b->priority; 
+    struct Compare {
+        bool operator()(Task* a, Task* b) {
+            return a->priority < b->priority; 
+        }
     };
 
     priority_queue<Task*, vector<Task*>, Compare> pq;
@@ -86,6 +94,7 @@ public:
     }
 
     // printing initial schedule 
+    /*
     void printInitialSchedule() {
         cout<<"Initial Optimal Schedule\n";
 
@@ -134,6 +143,59 @@ public:
             time++;
         }
         cout<<"\n\n";
+    }
+    */
+
+    void printInitialSchedule() {
+        cout << "Initial Optimal Schedule\n";
+
+        // Copy indegrees
+        map<pair<int,int>, int> tempIndegree;
+        for (auto& p : tasks)
+            tempIndegree[p.first] = p.second.indegree;
+
+        // Push all tasks with no dependencies
+        priority_queue<Task*, vector<Task*>, Cmp> localPQ;
+        for (auto& p : tasks)
+            if (tempIndegree[p.first] == 0)
+                localPQ.push(&p.second);
+
+        int time = 0;
+        set<pair<int,int>> scheduled;
+
+        while (!localPQ.empty()) {
+            cout << "\n  [Time " << time << "]\n";
+
+            int slots = (int)mechanics.size();
+            int assigned = 0;
+            vector<Task*> processing;
+
+            // Assign tasks to mechanics
+            while (!localPQ.empty() && assigned < slots) {
+                Task* t = localPQ.top(); localPQ.pop();
+                pair<int,int> key = {t->car, t->id};
+
+                if (scheduled.count(key)) continue;
+
+                cout << "   Mechanic " << assigned << " -> Car " << t->car << " Task " << t->id << ")\n";
+                scheduled.insert(key);
+                processing.push_back(t);
+                assigned++;
+            }
+
+            // Unlock next tasks
+            for (Task* t : processing) {
+                for (auto& e : t->edges) {
+                    tempIndegree[e.to]--;
+                    if (tempIndegree[e.to] == 0)
+                        localPQ.push(&tasks[e.to]);
+                }
+            }
+
+            time++;
+        }
+
+        cout << "\n\n";
     }
 
     //  Dynamic task creation 
