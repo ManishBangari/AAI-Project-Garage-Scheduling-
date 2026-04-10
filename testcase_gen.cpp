@@ -2,16 +2,14 @@
 #include <random>
 using namespace std;
 
-// Global RNG
+// Global Random Number Generator - A random number generator engine based on Mersenne Twister algorithm(new thing :))
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-// Random double
 double randDouble(double l, double r) {
     uniform_real_distribution<double> dist(l, r);
     return dist(rng);
 }
 
-// Random int
 int randInt(int l, int r) {
     uniform_int_distribution<int> dist(l, r);
     return dist(rng);
@@ -47,20 +45,18 @@ int main() {
             }
         }
 
-        // ✅ FIX: use shuffle instead of random_shuffle
         shuffle(possible.begin(), possible.end(), rng);
 
         for (int i = 0; i < E; i++) {
             int u = globalNode + possible[i].first;
             int v = globalNode + possible[i].second;
 
-            double p = randDouble(0.01, 0.99);
+            double p=randDouble(0.01, 0.99);
 
-            out << u << " " << v << " "
-                << fixed << setprecision(2) << p << "\n";
+            out<<u<<" "<<v<<" "<<fixed<<setprecision(2)<<p<<"\n";
         }
 
-        globalNode += nodes;
+        globalNode+=nodes;
     }
 
     out.close();
