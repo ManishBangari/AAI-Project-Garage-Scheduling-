@@ -12,7 +12,17 @@ The input file is hardcoded as `input.txt` inside the source code itself — no 
 To use a different input, simply replace the contents of `input.txt` with your new input before running.
 
 ## Test case generation
-We have made out own test case, no specific code for generating test cases.
+
+**Compile the test case generator file:**
+
+We have made our test case generator file, to run it enter 
+```bash
+g++ testcase_gen.cpp -o testcasegen
+```
+**Run test case generator:**
+```bash
+./testcase_gen
+```
 
 ## How to Run
 
