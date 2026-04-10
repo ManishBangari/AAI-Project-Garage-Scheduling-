@@ -21,7 +21,7 @@ struct Task{
 // Mechanic info...
 struct Mechanic{
     int id;
-    int  consecutive = 0;
+    int  consecutiveTasks = 0;
     bool on_break = false;
 };
 
@@ -32,7 +32,7 @@ struct Cmp{
 };
 
 // making class scheduler 
-class Scheduler {
+class scheduler {
 private:
     map<pair<int,int>, Task> tasks;
     int globalTaskId = 100;
@@ -50,7 +50,7 @@ public:
     int K;
 
     // constructor
-    Scheduler(int M, int k) : K(k) {
+    scheduler(int M, int k) : K(k) {
         for(int i = 0; i < M; i++)
             mechanics.push_back({i, 0, false});
     }
@@ -88,66 +88,13 @@ public:
     }
 
     // Pushing all ready task into the queue 
-        void initQueue() {
+        void initQ() {
         for(auto& p : tasks)
             if(p.second.indegree == 0 && !p.second.completed)  pq.push(&p.second);
     }
 
-    // printing initial schedule 
-    /*
-    void printInitialSchedule() {
-        cout<<"Initial Optimal Schedule\n";
-
-        map<pair<int,int>, int> tempIndegree;
-        for(auto& p : tasks)
-            tempIndegree[p.first] = p.second.indegree;
-
-        auto cmp = [](Task* a, Task* b){ return a->priority < b->priority; };
-        priority_queue<Task*, vector<Task*>, decltype(cmp)> localPQ(cmp);
-
-        for(auto& p : tasks)
-            if(tempIndegree[p.first] == 0) localPQ.push(&p.second);
-
-        int time = 0;
-        set<pair<int,int>> scheduled;
-
-        while(!localPQ.empty()) {
-            cout << "\n  [Time " << time << "]\n";
-            int slots = (int)mechanics.size();
-            int assigned = 0;
-
-            vector<Task*> processing;
-            priority_queue<Task*, vector<Task*>, decltype(cmp)> temp(cmp);
-
-            // take out the m ready task form the queu
-            while(!localPQ.empty() && assigned < slots) {
-                Task* t = localPQ.top(); localPQ.pop();
-                pair<int,int> key = {t->car, t->id};
-                if(scheduled.count(key)) continue;
-
-                cout<<"   Mechanic " << assigned << " -> Car " << t->car << " Task " << t->id<< ")\n";
-
-                scheduled.insert(key);
-                processing.push_back(t);
-                assigned++;
-            }
-
-            while(!temp.empty()) { localPQ.push(temp.top()); temp.pop(); }
-
-            for(Task* t : processing) {
-                for(auto& e : t->edges) {
-                    tempIndegree[e.to]--;
-                    if(tempIndegree[e.to] == 0)    localPQ.push(&tasks[e.to]);
-                }
-            }
-            time++;
-        }
-        cout<<"\n\n";
-    }
-    */
-
-    void printInitialSchedule() {
-        cout << "Initial Optimal Schedule\n";
+    void printInitsdledule() {
+        cout << "Initial Optimal schedule\n";
 
         // Copy indegrees
         map<pair<int,int>, int> tempIndegree;
@@ -235,23 +182,23 @@ public:
         int time = 0;
 
         while(!pq.empty()) {
-            cout<<"\n===Time: " << time << " ===\n";
+            cout<<"\n\tTime: " << time << " \n";
 
             // phase 1 :- mechanic on break
             for(auto& m : mechanics){
                 if(m.on_break){
                     cout<<"Mechanic " << m.id << " finishes break, ready.\n";
                     m.on_break    = false;
-                    m.consecutive = 0;   // reset the counter after a break
+                    m.consecutiveTasks = 0;   // reset the counter after a break
                 }
             }
 
-            // Phase 2 :- mechanics take breaks , they worked for the k consecutive unit time
+            // Phase 2 :- mechanics take breaks , they worked for the k consecutiveTasks unit time
             for(auto& m : mechanics){
-                if(!m.on_break && m.consecutive == K){
+                if(!m.on_break && m.consecutiveTasks == K){
                     cout<<"  Mechanic " << m.id   << " takes mandatory break (worked " << K << " in a row).\n";
                     m.on_break    = true;
-                    m.consecutive = 0;
+                    m.consecutiveTasks = 0;
                 }
             }
 
@@ -281,7 +228,7 @@ public:
             for(auto& [m, t] : assign) {
                 cout<<"  Mechanic "<< m->id << " executes Car " << t->car << " Task " << t->id<< ")\n";
 
-                m->consecutive++;
+                m->consecutiveTasks++;
                 t->completed = true;
 
                 auto newTasks = completeTask(t);
@@ -317,7 +264,7 @@ int main() {
     int M, K;
     cin>>M>>K;
 
-    Scheduler sch(M, K);
+    scheduler sdl(M, K);
 
     for(int car = 1; car <= N; car++) {
         int E; 
@@ -325,15 +272,15 @@ int main() {
         for(int i = 0; i < E; i++) {
             int u, v; double p;
             cin>>u>>v>>p;
-            sch.addEdge(car, u, v, p);
+            sdl.addEdge(car, u, v, p);
         }
     }
 
-    sch.recomputePriority();
-    sch.printInitialSchedule();
+    sdl.recomputePriority();
+    sdl.printInitsdledule();
 
-    sch.initQueue();
-    sch.run();
+    sdl.initQ();
+    sdl.run();
 
     return 0;
 }
