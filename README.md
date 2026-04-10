@@ -15,9 +15,9 @@ To use a different input, simply replace the contents of `input.txt` with your n
 
 **Compile the test case generator file:**
 
-We have made our test case generator file, to run it enter 
+We have made our test case generator file, to run it enter. It will make an input.txt file
 ```bash
-g++ testcase_gen.cpp -o testcasegen
+g++ testcase_gen.cpp -o testcase_gen
 ```
 **Run test case generator:**
 ```bash
